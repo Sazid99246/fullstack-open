@@ -1,15 +1,17 @@
-import { useState } from 'react';
+import React from 'react';
+import Note from './components/Note';
 
-const App = props => {
-  const [counter, setCounter] = useState(0);
-
+const App = (props) => {
+  const { notes } = props;
   return (
     <div>
-      <div>{counter}</div>
-      <button onClick={() => setCounter(counter + 1)}>
-        plus
-      </button>
+      <h1>Notes</h1>
+      <ul>
+        {notes.map(note => 
+          <Note key={note.id} note={note} />)}
+      </ul>
     </div>
-  )
-}
+  );
+};
+
 export default App;
