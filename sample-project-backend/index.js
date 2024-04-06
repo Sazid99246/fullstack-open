@@ -1,26 +1,26 @@
 const Note = require('./models/note')
-const express = require('express');
-const cors = require('cors');
+const express = require('express')
+const cors = require('cors')
 
-const app = express();
+const app = express()
 
-app.use(express.json());
-app.use(cors());
+app.use(express.json())
+app.use(cors())
 app.use(express.static('dist'))
 
 app.get('/', (request, response) => {
-    response.send('<h1>Hello World</h1>')
+  response.send('<h1>Hello World</h1>')
 })
 
 app.get('/api/notes', (request, response) => {
-    Note.find({}).then(notes => {
-      response.json(notes);
-    })
+  Note.find({}).then(notes => {
+    response.json(notes)
+  })
 })
 
 app.get('/api/notes/:id', (request, response) => {
   Note.findById(request.params.id).then(note => {
-    response.json(note);
+    response.json(note)
   })
 })
 
@@ -28,8 +28,8 @@ app.post('/api/notes', (request, response) => {
   const body = request.body
 
   if (!body.content) {
-    return response.status(400).json({ 
-      error: 'content missing' 
+    return response.status(400).json({
+      error: 'content missing'
     })
   }
 
@@ -44,14 +44,15 @@ app.post('/api/notes', (request, response) => {
   })
 })
 
-app.delete('/api/notes/:id', (request, response) => {
-  const id = Number(request.params.id);
-  notes = notes.filter(note => note.id != id);
-
-  response.status(204).end();
+app.delete('/api/notes/:id', (request, response, next) => {
+  Note.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)    
-});
+  console.log(`Server running on port ${PORT}`)
+})

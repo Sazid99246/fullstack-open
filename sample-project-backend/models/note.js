@@ -1,16 +1,20 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
+require('dotenv').config()
+const mongoose = require('mongoose')
 
 const url = process.env.MONGODB_URL
 
-mongoose.set('strictQuery', false);
+mongoose.set('strictQuery', false)
 
-mongoose.connect(url);
+mongoose.connect(url)
 
 const noteSchema = new mongoose.Schema({
-    content: String,
-    date: Date,
-    important: Boolean
+  content: {
+    type: String,
+    minLength: 5,
+    required: true
+  },
+  date: Date,
+  important: Boolean
 })
 
 noteSchema.set('toJSON', {
