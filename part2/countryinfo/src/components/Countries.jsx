@@ -7,7 +7,7 @@ const Countries = ({
       <div>
         Too many matches, please refine your search
       </div>
-    );
+    )
   }
   if (countries.length > 1) {
     return (
@@ -18,9 +18,9 @@ const Countries = ({
           </li>
         ))}
       </ul>
-    );
+    )
   }
-  return null;
-};
+  return null
+}
 
-export default Countries;
+export default Countries

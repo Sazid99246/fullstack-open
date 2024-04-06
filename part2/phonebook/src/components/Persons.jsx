@@ -1,4 +1,4 @@
-import Person from "./Person";
+import Person from "./Person"
 
 const Persons = ({
   persons,
@@ -13,7 +13,7 @@ const Persons = ({
           <Person key={person.id} person={person} handleRemovePerson={handleRemovePerson} />
         ))}
     </div>
-  );
-};
+  )
+}
 
-export default Persons;
+export default Persons

@@ -4,7 +4,7 @@ const Anecdote = ({ anecdoteText, anecdoteVotes }) => {
         {anecdoteText}<br />
         has {anecdoteVotes} votes
       </p>
-    );
-  };
+    )
+  }
 
-export default Anecdote;
+export default Anecdote

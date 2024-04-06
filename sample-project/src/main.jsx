@@ -4,6 +4,6 @@ import axios from 'axios'
 
 axios
     .get('/api/notes').then(response => {
-        const notes = response.data;
+        const notes = response.data
         ReactDOM.createRoot(document.getElementById('root')).render(<App notes={notes} />)
 })

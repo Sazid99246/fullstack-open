@@ -1,10 +1,10 @@
-import React from 'react';
-import StatisticLine from './StatisticLine';
+import React from 'react'
+import StatisticLine from './StatisticLine'
 
 const Statistics = props => {
     const total = props.good + props.neutral + props.bad
-    const average = (props.good - props.bad) / total;
-    const positive = 100 * props.good / total;
+    const average = (props.good - props.bad) / total
+    const positive = 100 * props.good / total
 
     if (total === 0) {
         return (
@@ -24,8 +24,8 @@ const Statistics = props => {
                     </tbody>
                 </table>
             </div>
-        );
+        )
     }
-};
+}
 
-export default Statistics;
+export default Statistics

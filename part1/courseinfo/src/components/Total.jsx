@@ -4,7 +4,7 @@ const Total = ({ parts }) => {
       <p>Number of exercises: {" "} 
         { total }
       </p>            
-    );
-};
+    )
+}
 
-export default Total;
+export default Total

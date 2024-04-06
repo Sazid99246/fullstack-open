@@ -5,7 +5,7 @@ const Notification = ({
       <div className='notification' style={{ color: notification.error ? "red" : "green" }}>
         {notification.message}
       </div>
-    );
-  };
+    )
+  }
   
-  export default Notification;
+  export default Notification

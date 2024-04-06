@@ -1,11 +1,11 @@
-import { useState } from "react";
-import Statistics from "./Statistics";
-import Button from "./Button";
+import { useState } from "react"
+import Statistics from "./Statistics"
+import Button from "./Button"
 
 const App = () => {
-  const [good, setGood] = useState(0);
-  const [neutral, setNeutral] = useState(0);
-  const [bad, setBad] = useState(0);
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
   
   return (
     <div>
@@ -17,7 +17,7 @@ const App = () => {
       <h1>statistics</h1>
       <Statistics good = {good} neutral={neutral} bad={bad} />
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App

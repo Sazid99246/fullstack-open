@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "axios"
 
 const getWeather = (countryName, cityName) => {
   return axios
@@ -8,7 +8,7 @@ const getWeather = (countryName, cityName) => {
       }
     })
     .then((response) => {
-      const result = response.data.results[0];
+      const result = response.data.results[0]
       return axios
         .get("https://api.open-meteo.com/v1/forecast", {
           params: {
@@ -16,11 +16,11 @@ const getWeather = (countryName, cityName) => {
             longitude: result.longitude,
             current_weather: true
           }
-        });
+        })
     })
     .then((response) => {
-      return response.data;
-    });
-};
+      return response.data
+    })
+}
 
-export default { getWeather };
+export default { getWeather }
