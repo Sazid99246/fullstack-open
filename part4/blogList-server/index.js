@@ -11,13 +11,12 @@ const blogSchema = new mongoose.Schema({
   likes: Number
 })
 blogSchema.set('toJSON', {
-    transform: (document, returnedObject) => {
-      returnedObject.id = returnedObject._id.toString()
-      delete returnedObject._id
-      delete returnedObject.__v
-    }
-  })
-  
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+  }
+})
 
 const Blog = mongoose.model('Blog', blogSchema)
 
@@ -28,7 +27,7 @@ app.use(cors())
 app.use(express.json())
 
 app.get('/', (request, response) => {
-    response.send('<h1>Hello World</h1>')
+  response.send('<h1>Hello World</h1>')
 })
 
 app.get('/api/blogs', (request, response) => {
