@@ -8,9 +8,9 @@ const Blog = require('../models/blog')
 const helper = require('./test_helper')
 
 beforeEach(async () => {
-    await Blog.deleteMany({})
-    await Blog.insertMany(helper.initialBlogs)
-  })
+  await Blog.deleteMany({})
+  await Blog.insertMany(helper.initialBlogs)
+})
 
 test('the length of blogs is returned', async () => {
     const response = await api.get('/api/blogs')
@@ -71,6 +71,36 @@ test('Blog that misses title or URL is rejected', async () => {
   assert.strictEqual(response.body.length, helper.initialBlogs.length)
 })
 
+test('deletion of a post', async () => { 
+  const blogAtStart = await helper.blogsInDb()
+  const blogToDelete = blogAtStart[0]
+
+  await api
+  .delete(`/api/blogs/${blogToDelete.id}`)
+  .expect(204)
+
+  const blogsAtEnd = await helper.blogsInDb()
+
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+
+  const contents = blogsAtEnd.map(r => r.content)
+  assert(!contents.includes(blogToDelete.content))
+})
+
+test('update a blog', async () => { 
+  const blogAtStart = await helper.blogsInDb()
+  const blogToUpdate = blogAtStart[0]
+  await api.put(`/api/blogs/${blogToUpdate.id}`).send(
+    {
+      ...blogToUpdate,
+      likes: blogToUpdate.likes + 1,
+    })
+    .expect(200)
+  
+  const updatedBlog = blogAtStart.body[0]
+  assert.strictEqual(updatedBlog.likes === helper.initialBlogs[0].likes + 1)
+})
+
 after(async () => {
-    await mongoose.connection.close()
+  await mongoose.connection.close()
 })

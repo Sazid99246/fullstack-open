@@ -22,4 +22,9 @@ blogRouter.post('/', (request, response) => {
     })
 })
 
+blogRouter.put('/:id', async (request, response) => {
+  const blog = await Blog.findByIdAndUpdate(request.params.id, request.body, { new: true })
+  response.status(200).json(blog)
+})
+
 module.exports = blogRouter
