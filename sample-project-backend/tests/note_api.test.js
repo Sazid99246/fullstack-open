@@ -4,10 +4,12 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
-const helper = require('./test_helper')
-const Note = require('../models/note')
 const bcrypt = require('bcrypt')
+
+const helper = require('./test_helper')
+
 const User = require('../models/user')
+const Note = require('../models/note')
 
 describe('when there is initially some notes saved', () => {
   beforeEach(async () => {
@@ -24,7 +26,7 @@ describe('when there is initially some notes saved', () => {
 
   test('all notes are returned', async () => {
     const response = await api.get('/api/notes')
-    
+
     assert.strictEqual(response.body.length, helper.initialNotes.length)
   })
 
@@ -122,7 +124,7 @@ describe('when there is initially some notes saved', () => {
   })
 })
 
-describe('when there is initially one user in db', () => {
+describe('when there is initially one user at db', () => {
   beforeEach(async () => {
     await User.deleteMany({})
 
@@ -153,7 +155,7 @@ describe('when there is initially one user in db', () => {
     const usernames = usersAtEnd.map(u => u.username)
     assert(usernames.includes(newUser.username))
   })
-  
+
   test('creation fails with proper statuscode and message if username already taken', async () => {
     const usersAtStart = await helper.usersInDb()
 
@@ -177,5 +179,6 @@ describe('when there is initially one user in db', () => {
 })
 
 after(async () => {
+  await User.deleteMany({})
   await mongoose.connection.close()
 })
