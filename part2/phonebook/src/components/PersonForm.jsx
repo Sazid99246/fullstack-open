@@ -26,4 +26,4 @@ const PersonForm = ({
   </form>
 )
 
-export default PersonForm;
+export default PersonForm
