@@ -16,8 +16,10 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 
   if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' })
-  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: 'malformatted id' })
+  }
+
+  if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
   }
 
@@ -63,23 +65,18 @@ app.post('/api/notes', (request, response, next) => {
   }).catch(error => next(error))
 })
 
-app.put('/api/notes/:id', (request, response, next) => {
-  const { content, important } = request.body
+app.put('/api/persons/:id', (request, response, next) => {
+  const { name, number } = request.body
 
-  Note.findById(request.params.id)
-    .then((note) => {
-      if (!note) {
-        return response.status(404).end()
-      }
-
-      note.content = content
-      note.important = important
-
-      return note.save().then((updatedNote) => {
-        response.json(updatedNote)
-      })
+  Note.findByIdAndUpdate(
+    request.params.id,
+    { name, number },   // updated data
+    { new: true, runValidators: true, context: 'query' }  // 👈 HERE
+  )
+    .then(updatedPerson => {
+      response.json(updatedPerson)
     })
-    .catch((error) => next(error))
+    .catch(error => next(error))
 })
 
 app.delete('/api/notes/:id', (request, response, next) => {
