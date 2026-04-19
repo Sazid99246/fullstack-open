@@ -1,11 +1,10 @@
 require('dotenv').config()
-const express = require('express');
+const express = require('express')
 var morgan = require('morgan')
-const cors = require('cors');
-const mongoose = require('mongoose');
+const cors = require('cors')
 const Person = require('./models/person')
 
-const app = express();
+const app = express()
 
 app.use(express.json())
 app.use(cors())
@@ -16,13 +15,13 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 
 app.get('/', (request, response) => {
-    response.send('<h1>Hello World</h1>')
+  response.send('<h1>Hello World</h1>')
 })
 
 app.get('/api/persons', (request, response) => {
-    Person.find({}).then(person => {
-      response.json(person)
-    })
+  Person.find({}).then(person => {
+    response.json(person)
+  })
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
@@ -104,7 +103,7 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  }
 
   if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
@@ -117,5 +116,5 @@ app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
-    console.log(`Server starting on ${PORT}`);
+  console.log(`Server starting on ${PORT}`)
 })
