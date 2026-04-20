@@ -2,10 +2,10 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "MongoDB vs SQL: Key Differences",
-  "author": "Michael Brown",
-  "url": "https://example.com/mongodb-vs-sql",
-  "likes": 20
+  "title": "Async/Await Explained Clearly",
+  "author": "Emily Davis",
+  "url": "https://example.com/async-await",
+  "likes": 15
 }
 ###
 
