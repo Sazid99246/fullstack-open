@@ -1,16 +1,31 @@
+const bcrypt = require('bcrypt')
 const assert = require('node:assert')
-const { test, after, beforeEach } = require('node:test')
+const { test, after, beforeEach, describe } = require('node:test')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
-
+const User = require('../models/user')
 const api = supertest(app)
 
+let token
+
 beforeEach(async () => {
-    await Blog.deleteMany({})
-    await Blog.insertMany(helper.initialBlogs)
+  await Blog.deleteMany({})
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash('sekret', 10)
+  const user = new User({ username: 'root', passwordHash })
+  await user.save()
+
+  const loginResponse = await api
+    .post('/api/login')
+    .send({ username: 'root', password: 'sekret' })
+
+  token = loginResponse.body.token
+
+  await Blog.insertMany(helper.initialBlogs)
 })
 
 test('blogs are returned as json', async () => {
@@ -41,6 +56,7 @@ test('a valid blog can be added and increases total count', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -62,6 +78,7 @@ test('if likes property is missing, it defaults to 0', async () => {
 
   const response = await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -78,6 +95,7 @@ test('blog without title is not added', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(400)
 })
@@ -91,6 +109,7 @@ test('blog without url is not added', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(400)
 })
@@ -101,6 +120,7 @@ test('a blog can be deleted', async () => {
 
   await api
     .delete(`/api/blogs/${blogToDelete.id}`)
+    .set('Authorization', `Bearer ${token}`)
     .expect(204)
 
   const blogsAtEnd = await helper.blogsInDb()
@@ -127,6 +147,73 @@ test('a blog can be updated (likes)', async () => {
     .expect('Content-Type', /application\/json/)
 
   assert.strictEqual(response.body.likes, updatedData.likes)
+})
+
+describe('when there is initially one user in db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+
+    await user.save()
+  })
+
+  test('creation succeeds with a fresh username', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'mluukkai',
+      name: 'Matti Luukkainen',
+      password: 'salainen',
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
+
+    const usernames = usersAtEnd.map(u => u.username)
+    assert(usernames.includes(newUser.username))
+  })
+
+  test('creation fails with proper statuscode and message if username already taken', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'root',
+      name: 'Superuser',
+      password: 'salainen',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+    assert(result.body.error.toLowerCase().includes('username'))
+
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
+})
+
+test('adding a blog fails with 401 if token is not provided', async () => {
+  const newBlog = {
+    title: 'No token',
+    author: 'Sazid',
+    url: 'http://example.com',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(401)
 })
 
 after(async () => {
