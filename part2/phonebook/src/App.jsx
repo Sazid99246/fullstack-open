@@ -1,59 +1,93 @@
 import { useEffect, useState } from 'react'
-import Persons from './components/Persons';
-import PersonForm from './components/PersonForm';
-import axios from 'axios';
+import Persons from './components/Persons'
+import PersonForm from './components/PersonForm'
+import personsService from './services/persons'
 
 const App = () => {
-  const [persons, setPersons] = useState([]);
+  const [persons, setPersons] = useState([])
+  const [newName, setNewName] = useState('')
+  const [number, setNumber] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then(response => {
-      setPersons(response.data)
+    personsService.getAll().then(initialPersons => {
+      setPersons(initialPersons)
     })
   }, [])
 
-  const [newName, setNewName] = useState('');
-  const [number, setNumber] = useState('');
-  const [searchTerm, setSearchTerm] = useState('')
-
   const handleNameChange = (event) => {
-    setNewName(event.target.value);
+    setNewName(event.target.value)
   }
 
   const handleNumberChange = (event) => {
-    setNumber(event.target.value);
+    setNumber(event.target.value)
   }
 
   const addPerson = (event) => {
-    event.preventDefault()
+  event.preventDefault()
 
-    const personExists = persons.some(
-      person => person.name === name
+  const existingPerson = persons.find(
+    person => person.name === newName
+  )
+
+  if (existingPerson) {
+    const confirmUpdate = window.confirm(
+      `${newName} is already added to phonebook, replace the old number with a new one?`
     )
 
-    if (personExists) {
-      alert(`${newName} is already added to phonebook`)
-      return
+    if (confirmUpdate) {
+      const updatedPerson = {
+        ...existingPerson,
+        number: number
+      }
+
+      personsService
+        .updatePerson(existingPerson.id, updatedPerson)
+        .then(returnedPerson => {
+          setPersons(
+            persons.map(person =>
+              person.id === existingPerson.id
+                ? returnedPerson
+                : person
+            )
+          )
+
+          setNewName('')
+          setNumber('')
+        })
     }
 
-    const personObject = {
-      name: newName,
-      number: number,
-      id: persons.length + 1
-    }
-
-    setPersons(persons.concat(personObject));
-    setNewName('');
-    setNumber('');
+    return
   }
+
+  const personObject = {
+    name: newName,
+    number: number
+  }
+
+  personsService.createPerson(personObject).then(returnedPerson => {
+    setPersons(persons.concat(returnedPerson))
+    setNewName('')
+    setNumber('')
+  })
+}
 
   const personsToShow = persons.filter(person =>
     person.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  const deletePerson = (id, name) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      personsService.deletePerson(id).then(() => {
+        setPersons(persons.filter(person => person.id !== id))
+      })
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
+
       <div>
         filter shown with
         <input
@@ -74,7 +108,9 @@ const App = () => {
 
       <h2>Numbers</h2>
 
-      <Persons persons={personsToShow} />
+      <Persons
+        persons={personsToShow}
+        deletePerson={deletePerson} />
     </div>
   )
 }
