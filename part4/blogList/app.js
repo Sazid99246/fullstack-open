@@ -17,7 +17,6 @@ mongoose.connect(config.MONGO_URI, { family: 4 })
   })
 
 app.use(express.json())
-app.use(blogsRouter)
 app.use('/api/blogs', blogsRouter)
 app.use(middleware.requestLogger)
 
