@@ -12,7 +12,10 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    return loggedUserJSON ? JSON.parse(loggedUserJSON) : null
+  })
 
   useEffect(() => {
     noteService.getAll().then(initialNotes => {
@@ -21,13 +24,10 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+    if (user) {
       noteService.setToken(user.token)
     }
-  }, [])
+  }, [user])
 
   const addNote = event => {
     event.preventDefault()
