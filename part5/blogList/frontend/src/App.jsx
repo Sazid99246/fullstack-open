@@ -13,6 +13,7 @@ const App = () => {
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
+  const [notification, setNotification] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -96,18 +97,24 @@ const App = () => {
       url: newUrl
     }
 
-    const returnedBlog = await blogService.create(blogObject)
+    try {
+      setNotification('')
+      const returnedBlog = await blogService.create(blogObject)
 
-    setBlogs(blogs.concat(returnedBlog))
+      setBlogs(blogs.concat(returnedBlog))
 
-    setNewTitle('')
-    setNewAuthor('')
-    setNewUrl('')
+      setNewTitle('')
+      setNewAuthor('')
+      setNewUrl('')
+    } catch (exception) {
+      setNotification('error creating blog')
+    }
   }
 
   return (
     <div>
       <h2>blogs</h2>
+      {notification && <div>{notification}</div>}
 
       <p>
         {user.name} logged in
