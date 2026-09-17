@@ -1,39 +1,29 @@
+const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const usersRouter = require('express').Router()
+const loginRouter = require('express').Router()
 const User = require('../models/user')
 
-usersRouter.get('/', async (request, response) => {
-  const users = await User.find({}).populate('blogs', {
-    title: 1,
-    author: 1,
-    url: 1,
-    id: 1
-  })
-  response.json(users)
-})
+loginRouter.post('/', async (request, response) => {
+  const { username, password } = request.body
 
-usersRouter.post('/', async (request, response) => {
-  const { username, name, password } = request.body
+  const user = await User.findOne({ username })
+  const passwordCorrect =
+    user === null ? false : await bcrypt.compare(password, user.passwordHash)
 
-  if (!password || password.length < 3) {
-    return response.status(400).json({
-      error: 'Password is required and its minimum length is 3 characters'
+  if (!(user && passwordCorrect)) {
+    return response.status(401).json({
+      error: 'invalid username or password'
     })
   }
 
-  const saltRounds = 10
-  const passwordHash = await bcrypt.hash(password, saltRounds)
+  const userForToken = {
+    username: user.username,
+    id: user._id
+  }
 
-  const user = new User({
-    username,
-    name,
-    passwordHash
-  })
+  const token = jwt.sign(userForToken, process.env.SECRET)
 
-  const savedUser = await user.save()
-
-  response.status(201).json(savedUser)
+  response.status(200).send({ token, username: user.username, name: user.name })
 })
 
-module.exports = usersRouter
-2500
+module.exports = loginRouter
