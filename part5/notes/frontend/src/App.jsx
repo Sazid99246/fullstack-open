@@ -14,7 +14,10 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    return loggedUserJSON ? JSON.parse(loggedUserJSON) : null
+  })
 
   const noteFormRef = useRef()
 
@@ -28,7 +31,6 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
       noteService.setToken(user.token)
     }
   }, [])
