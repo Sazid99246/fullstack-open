@@ -4,16 +4,15 @@ import Blog from './components/Blog'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [newTitle, setNewTitle] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
   const [notification, setNotification] = useState('')
+  const [newBlogVisible, setNewBlogVisible] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -88,27 +87,35 @@ const App = () => {
     )
   }
 
-  const addBlog = async (event) => {
-    event.preventDefault()
-
-    const blogObject = {
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl
-    }
-
+  const addBlog = async (blogObject) => {
     try {
       setNotification('')
       const returnedBlog = await blogService.create(blogObject)
-
       setBlogs(blogs.concat(returnedBlog))
-
-      setNewTitle('')
-      setNewAuthor('')
-      setNewUrl('')
+      setNewBlogVisible(false)
     } catch (exception) {
       setNotification('error creating blog')
     }
+  }
+
+  const updateBlog = (updatedBlog) => {
+    setBlogs(blogs.map(blog =>
+      blog.id === updatedBlog.id ? updatedBlog : blog
+    ))
+  }
+
+  const deleteBlog = async (id) => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this blog?'
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    await blogService.remove(id)
+
+    setBlogs(blogs.filter(blog => blog.id !== id))
   }
 
   return (
@@ -120,41 +127,28 @@ const App = () => {
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
       </p>
-
-      <h2>create new</h2>
-
-      <form onSubmit={addBlog}>
+      {newBlogVisible ? (
         <div>
-          title:
-          <input
-            value={newTitle}
-            onChange={({ target }) => setNewTitle(target.value)}
-          />
+          <BlogForm createBlog={addBlog} />
+          <button onClick={() => setNewBlogVisible(false)}>
+            cancel
+          </button>
         </div>
+      ) : (
+        <button onClick={() => setNewBlogVisible(true)}>
+          create new blog
+        </button>
+      )}
 
-        <div>
-          author:
-          <input
-            value={newAuthor}
-            onChange={({ target }) => setNewAuthor(target.value)}
-          />
-        </div>
-
-        <div>
-          url:
-          <input
-            value={newUrl}
-            onChange={({ target }) => setNewUrl(target.value)}
-          />
-        </div>
-
-        <button type="submit">create</button>
-      </form>
-
-      {blogs.map(blog =>
+      {[...blogs]
+      .sort((a, b) => b.likes - a.likes)
+      .map(blog =>
         <Blog
           key={blog.id}
           blog={blog}
+          updateBlog={updateBlog}
+          deleteBlog={deleteBlog}
+          user={user}
         />
       )}
     </div>

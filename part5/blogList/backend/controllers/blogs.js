@@ -49,7 +49,6 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
 
 blogsRouter.put('/:id', async (request, response) => {
   const { title, author, url, likes } = request.body
-
   const blog = await Blog.findById(request.params.id)
 
   if (!blog) {
@@ -62,6 +61,7 @@ blogsRouter.put('/:id', async (request, response) => {
   blog.likes = likes
 
   const updatedBlog = await blog.save()
+  await updatedBlog.populate('user', { username: 1, name: 1, id: 1 })
 
   response.json(updatedBlog)
 })
