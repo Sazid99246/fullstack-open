@@ -22,7 +22,6 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
     const returnedBlog = await blogService.update(blog.id, updatedBlog)
     updateBlog(returnedBlog)
   }
-
   return (
     <div style={blogStyle}>
       {blog.title} {blog.author}
@@ -36,7 +35,7 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
           <div>likes {blog.likes}</div>
           <button onClick={handleLike}>like</button>
 
-          {blog.user && blog.user.id === user.id && (
+          {blog.user && blog.user.username === user.username && (
             <button onClick={() => deleteBlog(blog.id)}>
               remove
             </button>
