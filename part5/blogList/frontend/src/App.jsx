@@ -61,6 +61,8 @@ const App = () => {
   if (user === null) {
     return (
       <div>
+        {notification && <div>{notification}</div>}
+
         <h2>Log in to application</h2>
 
         <form onSubmit={handleLogin}>
