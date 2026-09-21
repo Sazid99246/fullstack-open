@@ -23,7 +23,7 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
     updateBlog(returnedBlog)
   }
   return (
-    <div style={blogStyle}>
+    <div className="blog" style={blogStyle}>
       <div className="blog-title-author">
         <span className="blog-title">{blog.title}</span>{' '}
         <span className="blog-author">{blog.author}</span>
