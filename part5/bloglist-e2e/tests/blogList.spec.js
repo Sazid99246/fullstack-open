@@ -62,7 +62,7 @@ describe('Blog app', () => {
   test('a logged-in user can create a blog', async ({ page }) => {
     await login(page, 'testuser', 'password')
 
-    await page.getByRole('link', { name: 'create' }).click()
+    await page.getByRole('link', { name: 'NEW BLOG' }).click()
 
     const blogInputs = page.locator('input')
 
@@ -80,7 +80,7 @@ describe('Blog app', () => {
   test('a logged-in user can like a blog', async ({ page }) => {
     await login(page, 'testuser', 'password')
 
-    await page.getByRole('link', { name: 'create' }).click()
+    await page.getByRole('link', { name: 'NEW BLOG' }).click()
 
     const blogInputs = page.locator('input')
 
@@ -104,7 +104,7 @@ describe('Blog app', () => {
   test('a logged-in user can delete a blog', async ({ page }) => {
     await login(page, 'testuser', 'password')
 
-    await page.getByRole('link', { name: 'create' }).click()
+    await page.getByRole('link', { name: 'NEW BLOG' }).click()
 
     const blogInputs = page.locator('input')
 

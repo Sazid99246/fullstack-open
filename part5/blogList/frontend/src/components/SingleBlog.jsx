@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { Paper, Typography, Button, Link } from '@mui/material'
+
 import blogService from '../services/blogs'
 
 const SingleBlog = ({ blogs, updateBlog, deleteBlog, user }) => {
@@ -37,22 +39,71 @@ const SingleBlog = ({ blogs, updateBlog, deleteBlog, user }) => {
   }
   const isCreator = user && blog.user && blog.user.username === user.username
   return (
-    <div>
-      {notification && <div>{notification}</div>}
-      <h2>{blog.title}</h2>
-      <div>{blog.author}</div>
-      <div>
-        <a href={blog.url}>{blog.url}</a>
-      </div>
-      <div>likes {blog.likes}</div>
+    <Paper
+      elevation={3}
+      sx={{
+        p: 4,
+        mt: 4,
+        maxWidth: 700
+      }}
+    >
+      {notification && (
+        <Typography
+          color="error"
+          sx={{ mb: 2 }}
+        >
+          {notification}
+        </Typography>
+      )}
+
+      <Typography
+        variant="h4"
+        component="h2"
+        sx={{ mb: 2 }}
+      >
+        {blog.title}
+      </Typography>
+
+      <Typography
+        variant="subtitle1"
+        sx={{ mb: 2 }}
+      >
+        by {blog.author}
+      </Typography>
+
+      <Link
+        href={blog.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        sx={{ display: 'block', mb: 2 }}
+      >
+        {blog.url}
+      </Link>
+
+      <Typography sx={{ mb: 2 }}>
+        likes {blog.likes}
+      </Typography>
+
       {user && (
-        <button onClick={handleLike}>like</button>
+        <Button
+          variant="contained"
+          onClick={handleLike}
+          sx={{ mr: 2 }}
+        >
+          Like
+        </Button>
       )}
 
       {isCreator && (
-        <button onClick={handleDelete}>remove</button>
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={handleDelete}
+        >
+          Remove
+        </Button>
       )}
-    </div>
+    </Paper>
   )}
 
 export default SingleBlog

@@ -1,10 +1,6 @@
 import { useState, useEffect } from 'react'
-import {
-  Routes,
-  Route,
-  Link,
-  useNavigate
-} from 'react-router-dom'
+import { Routes, Route, Link, useNavigate } from 'react-router-dom'
+import { AppBar, Toolbar, Button, Box } from '@mui/material'
 
 import BlogForm from './components/BlogForm'
 import BlogList from './components/BlogList'
@@ -13,6 +9,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import SingleBlog from './components/SingleBlog'
 import CreateBlog from './components/CreateBlog'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -101,7 +98,7 @@ const App = () => {
   const blogView = () => (
     <div>
       <h2>blogs</h2>
-      {notification && <div>{notification}</div>}
+      <Notification message={notification}></Notification>
       <BlogList
         blogs={blogs}
         updateBlog={updateBlog}
@@ -113,18 +110,56 @@ const App = () => {
 
   return (
     <div>
-      <nav>
-        <Link to="/">blogs</Link>{' '}
-        {!user && (
-          <Link to="/login">login</Link>
-        )}
-        {user && (
-          <>
-            <Link to="/create">create</Link>{' '}
-            <button onClick={handleLogout}>logout</button>
-          </>
-        )}
-      </nav>
+      <AppBar position="static">
+        <Toolbar>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/"
+          >
+            Blog App
+          </Button>
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          <Button
+            color="inherit"
+            component={Link}
+            to="/"
+          >
+            BLOGS
+          </Button>
+
+          {user && (
+            <>
+              <Button
+                color="inherit"
+                component={Link}
+                to="/create"
+              >
+                NEW BLOG
+              </Button>
+
+              <Button
+                color="inherit"
+                onClick={handleLogout}
+              >
+                LOGOUT
+              </Button>
+            </>
+          )}
+
+          {!user && (
+            <Button
+              color="inherit"
+              component={Link}
+              to="/login"
+            >
+              LOGIN
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
       <Routes>
         <Route path="/" element={blogView()} />
         <Route path="/login" element={loginView()} />

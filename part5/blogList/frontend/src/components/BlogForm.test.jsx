@@ -17,7 +17,7 @@ describe('BlogForm', () => {
     await user.type(inputs[1], 'Sazid')
     await user.type(inputs[2], 'https://example.com')
 
-    await user.click(screen.getByRole('button', { name: 'create' }))
+    await user.click(screen.getByRole('button', { name: 'Create' }))
 
     expect(createBlog).toHaveBeenCalledWith({
       title: 'Testing React',
