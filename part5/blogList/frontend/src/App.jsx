@@ -11,14 +11,13 @@ import BlogList from './components/BlogList'
 import Login from './components/Login'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import SingleBlog from './components/SingleBlog'
+import CreateBlog from './components/CreateBlog'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState('')
-  const [newBlogVisible, setNewBlogVisible] = useState(false)
 
   const navigate = useNavigate()
 
@@ -50,8 +49,6 @@ const App = () => {
         'loggedBloglistUser',
         JSON.stringify(user)
       )
-      setUsername('')
-      setPassword('')
       setNotification('')
 
       navigate('/')
@@ -72,7 +69,6 @@ const App = () => {
       setNotification('')
       const returnedBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(returnedBlog))
-      setNewBlogVisible(false)
     } catch {
       setNotification('error creating blog')
     }
@@ -92,8 +88,8 @@ const App = () => {
     }
 
     await blogService.remove(id)
-
     setBlogs(blogs.filter(blog => blog.id !== id))
+    navigate('/')
   }
 
   const loginView = () => ( <Login
@@ -106,22 +102,6 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       {notification && <div>{notification}</div>}
-
-      {user && (
-        newBlogVisible ? (
-          <div>
-            <BlogForm createBlog={addBlog} />
-            <button onClick={() => setNewBlogVisible(false)}>
-              cancel
-            </button>
-          </div>
-        ) : (
-          <button onClick={() => setNewBlogVisible(true)}>
-            create new blog
-          </button>
-        )
-      )}
-
       <BlogList
         blogs={blogs}
         updateBlog={updateBlog}
@@ -134,12 +114,13 @@ const App = () => {
   return (
     <div>
       <nav>
-        <Link to="/">blogs</Link>
+        <Link to="/">blogs</Link>{' '}
         {!user && (
           <Link to="/login">login</Link>
         )}
         {user && (
           <>
+            <Link to="/create">create</Link>{' '}
             <button onClick={handleLogout}>logout</button>
           </>
         )}
@@ -147,6 +128,21 @@ const App = () => {
       <Routes>
         <Route path="/" element={blogView()} />
         <Route path="/login" element={loginView()} />
+        <Route
+          path="/create"
+          element={<CreateBlog addBlog={addBlog} />}
+        />
+        <Route
+          path="/blogs/:id"
+          element={
+            <SingleBlog
+              blogs={blogs}
+              updateBlog={updateBlog}
+              deleteBlog={deleteBlog}
+              user={user}
+            />
+          }
+        />
       </Routes>
     </div>
   )}

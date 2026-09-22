@@ -2,7 +2,7 @@ import Blog from './Blog'
 
 const BlogList = ({ blogs, updateBlog, deleteBlog, user }) => {
   return (
-    <div>
+    <ul>
       {[...blogs]
         .sort((a, b) => b.likes - a.likes)
         .map(blog =>
@@ -14,7 +14,7 @@ const BlogList = ({ blogs, updateBlog, deleteBlog, user }) => {
             user={user}
           />
         )}
-    </div>
+    </ul>
   )}
 
 export default BlogList
